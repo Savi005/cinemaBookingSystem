@@ -25,6 +25,7 @@ public class ShowTimeService {
         this.movieRepository = movieRepository;
         this.seatRepository = seatRepository;
     }
+    //get the movie time form user and save it to make an id and then get it gain to make seats 
     @Transactional
     public ShowTime createShowTime(Long movieId, ShowTime showTime){
 
