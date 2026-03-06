@@ -5,7 +5,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.example.cinema.dto.CreateShowTimeRequest;
+import com.example.cinema.dto.ShowTimeResponse;
 import com.example.cinema.model.*;
 import com.example.cinema.repository.*;
 
@@ -25,30 +28,48 @@ public class ShowTimeService {
         this.movieRepository = movieRepository;
         this.seatRepository = seatRepository;
     }
-    //get the movie time form user and save it to make an id and then get it gain to make seats 
+
     @Transactional
-    public ShowTime createShowTime(Long movieId, ShowTime showTime){
+    public ShowTimeResponse createShowTime(Long movieId, CreateShowTimeRequest request){
 
         Movie movie = movieRepository.findById(movieId)
         .orElseThrow(() -> new RuntimeException("Movie not found"));
 
+        ShowTime showTime = new ShowTime();
+        showTime.setStartTime(request.getStartTime());
         showTime.setMovie(movie);
+
         ShowTime savedShowTime = showTimeRepository.save(showTime);
 
         List<Seat> seats = new ArrayList<>();
 
-        for(int i = 1; i<=50;i++){
+        for(int i = 1; i <= 50; i++){
             Seat seat = new Seat();
             seat.setSeatnumber("A"+i);
             seat.setStatus(SeatStatus.AVAILABLE);
             seat.setShowTime(savedShowTime);
             seats.add(seat);
         }
+
         seatRepository.saveAll(seats);
-        return showTime;
-    }
-    public List<ShowTime> getShowTimesByMovie(Long movieId) {
-        return showTimeRepository.findByMovieId(movieId);
+
+        return new ShowTimeResponse(
+                savedShowTime.getId(),
+                savedShowTime.getStartTime(),
+                movie.getId()
+        );
     }
 
+    public List<ShowTimeResponse> getShowTimesByMovie(Long movieId) {
+
+        List<ShowTime> showTimes = showTimeRepository.findByMovieId(movieId);
+
+        return showTimes.stream()
+                .map(showTime -> new ShowTimeResponse(
+                        showTime.getId(),
+                        showTime.getStartTime(),
+                        showTime.getMovie().getId()
+                ))
+                .collect(Collectors.toList());
+    }
 }

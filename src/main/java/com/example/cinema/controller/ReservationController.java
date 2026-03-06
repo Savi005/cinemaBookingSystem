@@ -2,13 +2,13 @@ package com.example.cinema.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.cinema.model.Reservation;
+import com.example.cinema.dto.ReservationResponse;
 import com.example.cinema.service.ReservationService;
-
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
+
     private final ReservationService reservationService;
 
     public ReservationController (ReservationService reservationsService){
@@ -16,7 +16,7 @@ public class ReservationController {
     }
 
     @PostMapping("/seat/{seatId}")
-    public Reservation reservation(
+    public ReservationResponse reservation(
         @PathVariable Long seatId,
         @RequestHeader("Idempotency-Key") String idempotencyKey)
     {

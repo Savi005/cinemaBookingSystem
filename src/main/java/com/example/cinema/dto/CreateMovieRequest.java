@@ -1,12 +1,17 @@
-package com.example.cinema.dto.request;
+package com.example.cinema.dto;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public class CreateMovieRequest {
 
+    @NotBlank(message = "Title cannot be empty")
     private String title;
+
+    @Min(value = 1, message = "Duration must be at least 1 minute")
     private int durationMinutes;
 
-    public CreateMovieRequest() {
-    }
+    public CreateMovieRequest() {}
 
     public String getTitle() {
         return title;

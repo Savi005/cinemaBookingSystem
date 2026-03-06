@@ -5,11 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import com.example.cinema.dto.ReservationResponse;
 import com.example.cinema.model.*;
 import com.example.cinema.repository.*;
 
 @Service
 public class ReservationService {
+
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
 
@@ -22,7 +24,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public Reservation reserveSeat(Long seatId, String idempotencyKey) {
+    public ReservationResponse reserveSeat(Long seatId, String idempotencyKey) {
 
         // Idempotency check
         Reservation existing = reservationRepository
@@ -30,11 +32,15 @@ public class ReservationService {
                 .orElse(null);
 
         if (existing != null) {
-            return existing;
+            return new ReservationResponse(
+                    existing.getId(),
+                    existing.getSeat().getId(),
+                    existing.getReservedAt()
+            );
         }
 
-        Seat seat = seatRepository.findByIdAndStatus(seatId,SeatStatus.AVAILABLE)
-        .orElseThrow(()-> new RuntimeException("Seat not available"));
+        Seat seat = seatRepository.findByIdAndStatus(seatId, SeatStatus.AVAILABLE)
+                .orElseThrow(() -> new RuntimeException("Seat not available"));
 
         seat.setStatus(SeatStatus.RESERVED);
 
@@ -43,7 +49,12 @@ public class ReservationService {
         reservation.setIdempotencyKey(idempotencyKey);
         reservation.setReservedAt(LocalDateTime.now());
 
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+
+        return new ReservationResponse(
+                saved.getId(),
+                saved.getSeat().getId(),
+                saved.getReservedAt()
+        );
     }
 }
- 
