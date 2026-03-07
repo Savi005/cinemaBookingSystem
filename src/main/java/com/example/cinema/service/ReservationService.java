@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 import com.example.cinema.dto.ReservationResponse;
+import com.example.cinema.exception.SeatNotAvailableException;
 import com.example.cinema.model.*;
 import com.example.cinema.repository.*;
 
@@ -40,7 +41,7 @@ public class ReservationService {
         }
 
         Seat seat = seatRepository.findByIdAndStatus(seatId, SeatStatus.AVAILABLE)
-                .orElseThrow(() -> new RuntimeException("Seat not available"));
+                .orElseThrow(() -> new SeatNotAvailableException("Seat not available"));
 
         seat.setStatus(SeatStatus.RESERVED);
 

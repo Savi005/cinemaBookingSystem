@@ -1,5 +1,6 @@
 package com.example.cinema.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.example.cinema.dto.CreateShowTimeRequest;
 import com.example.cinema.dto.ShowTimeResponse;
+import com.example.cinema.exception.MovieNotFoundException;
 import com.example.cinema.model.*;
 import com.example.cinema.repository.*;
 
@@ -33,7 +35,7 @@ public class ShowTimeService {
     public ShowTimeResponse createShowTime(Long movieId, CreateShowTimeRequest request){
 
         Movie movie = movieRepository.findById(movieId)
-        .orElseThrow(() -> new RuntimeException("Movie not found"));
+        .orElseThrow(() -> new MovieNotFoundException("Movie not found"));
 
         ShowTime showTime = new ShowTime();
         showTime.setStartTime(request.getStartTime());
@@ -59,7 +61,7 @@ public class ShowTimeService {
                 movie.getId()
         );
     }
-
+    @Cacheable("showtimes")
     public List<ShowTimeResponse> getShowTimesByMovie(Long movieId) {
 
         List<ShowTime> showTimes = showTimeRepository.findByMovieId(movieId);
