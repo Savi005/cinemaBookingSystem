@@ -25,7 +25,10 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse reserveSeat(Long seatId, String idempotencyKey) {
+    public ReservationResponse reserveSeat(
+            Long showTimeId,
+            String seatNumber,
+            String idempotencyKey) {
 
         // Idempotency check
         Reservation existing = reservationRepository
@@ -40,9 +43,14 @@ public class ReservationService {
             );
         }
 
-        Seat seat = seatRepository.findByIdAndStatus(seatId, SeatStatus.AVAILABLE)
-                .orElseThrow(() -> new SeatNotAvailableException("Seat not available"));
+        Seat seat = seatRepository.findByShowTimeIdAndSeatnumberAndStatus(
+                        showTimeId,
+                        seatNumber,
+                        SeatStatus.AVAILABLE)
+                .orElseThrow(() ->
+                        new SeatNotAvailableException("Seat not available"));
 
+        // reserve seat
         seat.setStatus(SeatStatus.RESERVED);
 
         Reservation reservation = new Reservation();

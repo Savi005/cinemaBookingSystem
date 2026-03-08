@@ -12,4 +12,11 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     List<Seat> findByShowTimeId(Long showTimeId);
 
     Optional<Seat> findByIdAndStatus(Long id, SeatStatus status);
+
+    Optional<Seat> findByShowTimeIdAndSeatnumberAndStatus(
+            Long showTimeId,
+            String seatnumber,
+            SeatStatus status
+    );
+
 }

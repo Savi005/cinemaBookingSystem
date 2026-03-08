@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.example.cinema.dto.SeatResponse;
 import com.example.cinema.dto.CreateShowTimeRequest;
 import com.example.cinema.dto.ShowTimeResponse;
 import com.example.cinema.exception.MovieNotFoundException;
@@ -60,7 +60,9 @@ public class ShowTimeService {
                 savedShowTime.getStartTime(),
                 movie.getId()
         );
+        
     }
+    
     @Cacheable("showtimes")
     public List<ShowTimeResponse> getShowTimesByMovie(Long movieId) {
 
@@ -74,4 +76,16 @@ public class ShowTimeService {
                 ))
                 .collect(Collectors.toList());
     }
+    public List<SeatResponse> getSeatsByShowTime(Long showTimeId) {
+
+    List<Seat> seats = seatRepository.findByShowTimeId(showTimeId);
+
+    return seats.stream()
+            .map(seat -> new SeatResponse(
+                    seat.getSeatNumber(),
+                    seat.getStatus()
+            ))
+            .collect(Collectors.toList());
+}
+    
 }
