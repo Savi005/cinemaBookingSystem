@@ -43,15 +43,16 @@ public class ReservationService {
             );
         }
 
-        Seat seat = seatRepository.findByShowTimeIdAndSeatnumberAndStatus(
+        Seat seat = seatRepository.findByShowTimeIdAndSeatNumberAndStatus(
                         showTimeId,
                         seatNumber,
                         SeatStatus.AVAILABLE)
                 .orElseThrow(() ->
                         new SeatNotAvailableException("Seat not available"));
-
+        System.out.println(seat);
         // reserve seat
         seat.setStatus(SeatStatus.RESERVED);
+
 
         Reservation reservation = new Reservation();
         reservation.setSeat(seat);

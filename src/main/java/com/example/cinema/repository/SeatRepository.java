@@ -13,10 +13,9 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     Optional<Seat> findByIdAndStatus(Long id, SeatStatus status);
 
-    Optional<Seat> findByShowTimeIdAndSeatnumberAndStatus(
+    Optional<Seat> findByShowTimeIdAndSeatNumberAndStatus(
             Long showTimeId,
-            String seatnumber,
-            SeatStatus status
-    );
+            String seatNumber,
+            SeatStatus status);
 
 }
